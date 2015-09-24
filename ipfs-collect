@@ -1,0 +1,45 @@
+#!/bin/sh
+set -eu
+
+rrd_file=ipfs.rrd
+data_file=data
+
+if ! [ -e "$rrd_file" ]; then
+  rrdtool create "$rrd_file" -s 10 --no-overwrite \
+    DS:data_in:DERIVE:10:0:U \
+    DS:bw_total_in:DERIVE:10:0:U \
+    DS:bw_total_out:DERIVE:10:0:U \
+    DS:blocks_in:DERIVE:10:0:U \
+    DS:blocks_dup_in:DERIVE:10:0:U \
+    RRA:AVERAGE:0.5:1:8640 \
+    RRA:MIN:0.5:1:8640 \
+    RRA:MAX:0.5:1:8640 \
+    RRA:LAST:0.5:1:8640
+fi
+
+while sleep 5; do
+  data_in=U
+  bw_total_in=U
+  bw_total_out=U
+  blocks_in=U
+  blocks_dup_in=U
+
+  eval "$(
+    set +e
+
+    stat -c 'data_in=%s;' "$data_file"
+
+    curl -s 'http://127.0.0.1:5001/api/v0/stats/bw?encoding=json&stream-channels=true' | \
+      jq -r '@sh "bw_total_in=\(.TotalIn | tonumber); bw_total_out=\(.TotalOut | tonumber);"'
+
+    curl -s 'http://127.0.0.1:5001/api/v0/bitswap/stat?encoding=json&stream-channels=true' | \
+      jq -r '@sh "blocks_in=\(.BlocksReceived | tonumber); blocks_dup_in=\(.DupBlksReceived | tonumber);"'
+  )"
+
+  update="N:$data_in:$bw_total_in:$bw_total_out:$blocks_in:$blocks_dup_in"
+
+  printf '%s\n' "$update"
+  rrdtool update "$rrd_file" \
+          -t data_in:bw_total_in:bw_total_out:blocks_in:blocks_dup_in \
+          "$update"
+done
