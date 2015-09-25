@@ -18,7 +18,7 @@ if ! [ -e "$rrd_file" ]; then
     RRA:LAST:0.5:1:8640
 fi
 
-while sleep 5; do
+while printf '\n'; sleep 5; do :; done | while read l; do
   data_in=0
   bw_total_in=0
   bw_total_out=0
