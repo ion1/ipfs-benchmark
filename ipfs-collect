@@ -19,12 +19,12 @@ if ! [ -e "$rrd_file" ]; then
 fi
 
 while sleep 5; do
-  data_in=U
-  bw_total_in=U
-  bw_total_out=U
-  blocks_in=U
-  blocks_dup_in=U
-  wantlist_length=U
+  data_in=0
+  bw_total_in=0
+  bw_total_out=0
+  blocks_in=0
+  blocks_dup_in=0
+  wantlist_length=0
 
   eval "$(
     set +e
