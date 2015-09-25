@@ -15,16 +15,13 @@ rrdtool graph "$graph_file" -e now -s 'end-2h' -w 800 -h 400 -a PNG -E -Y \
   "DEF:blocks_in=$rrd_file:blocks_in:AVERAGE" \
   "DEF:blocks_dup_in=$rrd_file:blocks_dup_in:AVERAGE" \
   "DEF:wantlist_length=$rrd_file:wantlist_length:AVERAGE" \
-  "CDEF:blocks_undup_in=blocks_in,blocks_dup_in,-" \
-  "CDEF:bw_total_dup_in=bw_total_in,blocks_in,/,blocks_dup_in,*,0,ADDNAN" \
-  "CDEF:bw_total_undup_in=bw_total_in,bw_total_dup_in,-" \
+  "CDEF:blocks_dup_ratio=blocks_dup_in,blocks_in,/,0,ADDNAN" \
+  "CDEF:bw_total_dup_in=bw_total_in,blocks_dup_ratio,*" \
   "CDEF:data_in_smooth=data_in,$smoothing,TRENDNAN" \
   "CDEF:bw_total_in_smooth=bw_total_in,$smoothing,TRENDNAN" \
-  "CDEF:bw_total_dup_in_smooth=bw_total_dup_in,$smoothing,TRENDNAN" \
-  "CDEF:bw_total_undup_in_smooth=bw_total_undup_in,$smoothing,TRENDNAN" \
   "CDEF:bw_total_out_smooth=bw_total_out,$smoothing,TRENDNAN" \
-  "CDEF:blocks_in_smooth=blocks_in,$smoothing,TRENDNAN" \
-  "CDEF:blocks_dup_in_smooth=blocks_dup_in,$smoothing,TRENDNAN" \
+  "CDEF:bw_total_dup_in_smooth=bw_total_dup_in,$smoothing,TRENDNAN" \
+  "CDEF:bw_total_undup_in_smooth=bw_total_in_smooth,bw_total_dup_in_smooth,-" \
   "CDEF:wantlist_length_scaled=wantlist_length,-$wantlist_scale,/" \
   "AREA:bw_total_undup_in_smooth#ddff77:Download rate (new blocks portion, estimated ratio)\l" \
   "AREA:bw_total_dup_in_smooth#00ff00:Download rate (dup blocks portion, estimated ratio)\l:STACK" \
