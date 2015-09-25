@@ -4,10 +4,11 @@ set -eu
 rrd_file=ipfs.rrd
 graph_file=ipfs.png
 smoothing=120
+wantlist_scale=0.001
 
 rrdtool graph "$graph_file" -e now -s 'end-2h' -w 800 -h 400 -a PNG -E -Y \
   --vertical-label "B/s" \
-  --right-axis 0.001:200 --right-axis-label "objects" \
+  --right-axis "-$wantlist_scale:0" --right-axis-label "objects" \
   "DEF:data_in=$rrd_file:data_in:AVERAGE" \
   "DEF:bw_total_in=$rrd_file:bw_total_in:AVERAGE" \
   "DEF:bw_total_out=$rrd_file:bw_total_out:AVERAGE" \
@@ -24,11 +25,12 @@ rrdtool graph "$graph_file" -e now -s 'end-2h' -w 800 -h 400 -a PNG -E -Y \
   "CDEF:bw_total_out_smooth=bw_total_out,$smoothing,TRENDNAN" \
   "CDEF:blocks_in_smooth=blocks_in,$smoothing,TRENDNAN" \
   "CDEF:blocks_dup_in_smooth=blocks_dup_in,$smoothing,TRENDNAN" \
-  "CDEF:wantlist_length_scaled=wantlist_length,200,-,1000,*" \
+  "CDEF:wantlist_length_scaled=wantlist_length,-$wantlist_scale,/" \
   "AREA:bw_total_undup_in_smooth#ddff77:Download rate (new blocks portion, estimated ratio)\l" \
   "AREA:bw_total_dup_in_smooth#00ff00:Download rate (dup blocks portion, estimated ratio)\l:STACK" \
   "LINE1:bw_total_in_smooth#00ff00" \
   "LINE2:bw_total_out_smooth#770000:Upload rate\l" \
   "LINE2:data_in_smooth#0000ff:File growth rate\l" \
-  "HRULE:0#0000007f::dashes" \
-  "LINE2:wantlist_length_scaled#ff00ff:Wantlist length\l"
+  "AREA:wantlist_length_scaled#ff00ff33" \
+  "LINE2:wantlist_length_scaled#ff00ff:Wantlist length\l" \
+  "HRULE:0#0000007f::dashes"
