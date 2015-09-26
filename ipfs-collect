@@ -19,11 +19,11 @@ if ! [ -e "$rrd_file" ]; then
 fi
 
 while printf '\n'; sleep 5; do :; done | while read l; do
-  data_in=0
-  bw_total_in=0
-  bw_total_out=0
-  blocks_in=0
-  blocks_dup_in=0
+  data_in=U
+  bw_total_in=U
+  bw_total_out=U
+  blocks_in=U
+  blocks_dup_in=U
   wantlist_length=U
 
   eval "$(
