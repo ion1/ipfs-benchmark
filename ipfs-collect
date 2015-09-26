@@ -24,7 +24,7 @@ while printf '\n'; sleep 5; do :; done | while read l; do
   bw_total_out=0
   blocks_in=0
   blocks_dup_in=0
-  wantlist_length=0
+  wantlist_length=U
 
   eval "$(
     set +e
