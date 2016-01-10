@@ -3,6 +3,8 @@ set -eu
 
 rrd_file=ipfs.rrd
 data_file=data
+start_time_file=start_time
+end_time_file=end_time
 
 if ! [ -e "$rrd_file" ]; then
   rrdtool create "$rrd_file" -s 10 --no-overwrite \
@@ -17,6 +19,8 @@ if ! [ -e "$rrd_file" ]; then
     RRA:MAX:0.5:1:8640 \
     RRA:LAST:0.5:1:8640
 fi
+
+date +%s > $start_time_file
 
 while printf '\n'; sleep 5; do :; done | while read l; do
   data_in=U
@@ -44,4 +48,6 @@ while printf '\n'; sleep 5; do :; done | while read l; do
   rrdtool update "$rrd_file" \
           -t data_in:bw_total_in:bw_total_out:blocks_in:blocks_dup_in:wantlist_length \
           "$update"
+
+  date +%s > $end_time_file
 done
