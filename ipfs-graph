@@ -3,8 +3,8 @@ set -eu
 
 rrd_file=ipfs.rrd
 graph_file=ipfs.png
-smoothing=120
-wantlist_scale=0.001
+smoothing=0
+wantlist_scale=0.00002
 
 rrdtool graph "$graph_file" -e now -s 'end-2h' -w 800 -h 400 -a PNG -E -Y \
   --vertical-label "B/s" \
